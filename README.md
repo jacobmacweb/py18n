@@ -114,6 +114,8 @@ i18n = I18nExtension([
 ], fallback="en")
 
 # Setup the bot by giving it a function to get the user's locale.
+# This could potentially refer to a database or other file.
+# Anything you want!
 # Otherwise, it will always be the fallback locale.
 def get_locale(ctx: commands.Context):
     preferences = {
