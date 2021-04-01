@@ -18,11 +18,138 @@
 -->
 
 # Py18n
-This is a open sourced version of the internal internationalization engine used for [Kolumbao](https://kolumbao.com/)
+This is a open sourced version of the internal internationalization engine used for [Kolumbao](https://kolumbao.com/).
+
+
+## Installation
+To install the package to your Python installation, clone the repository locally then run the following command in the repository's directory
+```bash
+py setup.py install
+```
+
+You can now use the library!
 
 ## Usage
-- This section will be updated when it is in a working form.
+
+### Setting up languages
+A language can be initialized like this:
+```python
+french = Language("French", "fr", {
+    "hello": "Bonjour",
+    "goodbye": "Au revoir",
+    "francais": "Français"
+})
+```
+
+But you may want to store languages seperately and create them as follows:
+```python
+import json
+french = Language("French", "fr", json.load(open("fr.json")))
+```
+
+### Base I18n class
+When setting up the i18n class, we need to setup our languages and declare a fallback language:
+```python
+i18n = I18n([
+    Language("English", "en", {
+        "hello": "Hello",
+        "goodbye": "Goodbye",
+        "english": "English"
+    }),
+    Language("French", "fr", {
+        "hello": "Bonjour",
+        "goodbye": "Au revoir",
+        "francais": "Français"
+    }),
+], fallback="en")
+```
+
+`i18n` will now fallback to english if it can't find a translation for other languages.
+```python
+>>> i18n.get_text("hello", "en")
+'Hello'
+>>> i18n.get_text("hello", "fr")
+'Bonjour'
+>>> # "english" is not a listed translation in the French locale, so we revert to english
+>>> i18n.get_text("english", "fr")
+'English'
+>>> # However we can make it not fallback, but this will throw an error if the translation isn't found
+>>> i18n.get_text("english", "fr", should_fallback=False) 
+Traceback (most recent call last):
+  File "C:\Users\Avery\AppData\Local\Programs\Python\Python39\lib\site-packages\py18n-1.0-py3.9.egg\py18n\i18n.py", line 87, in get_text
+  File "C:\Users\Avery\AppData\Local\Programs\Python\Python39\lib\site-packages\py18n-1.0-py3.9.egg\py18n\language.py", line 178, in get_text
+  File "C:\Users\Avery\AppData\Local\Programs\Python\Python39\lib\site-packages\py18n-1.0-py3.9.egg\py18n\language.py", line 66, in _get_translation_from_key
+KeyError: 'english'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "C:\Users\Avery\AppData\Local\Programs\Python\Python39\lib\site-packages\py18n-1.0-py3.9.egg\py18n\i18n.py", line 91, in get_text
+KeyError: 'Translation english not found for fr!'
+```
+
+### Discord
+For Discord.py, we can use the extension `py18n.extension.I18nExtension`. Setup your bot as you would usually, and then run `i18n.init_bot` as follows.
+
+```python
+from discord.ext import commands
+from py18n.extension import I18nExtension
+
+# Make our bot
+bot = commands.Bot("prefix")
+
+# Setup similarly to the usual class
+i18n = I18nExtension([
+    Language("English", "en", {
+        "hello": "Hello",
+        "goodbye": "Goodbye",
+        "english": "English"
+    }),
+    Language("French", "fr", {
+        "hello": "Bonjour",
+        "goodbye": "Au revoir",
+        "francais": "Français"
+    }),
+], fallback="en")
+
+# Setup the bot by giving it a function to get the user's locale.
+# Otherwise, it will always be the fallback locale.
+def get_locale(ctx: commands.Context):
+    preferences = {
+       301736945610915852: "en"
+    }
+    return preferences[ctx.author.id]
+
+# Set it up!
+i18n.init_bot(bot, get_locale)
+
+@bot.command(pass_context=True)
+async def hello(ctx):
+    await ctx.send(i18n.contextually_get_text("hello"))
+```
+
+This is all good, but because of our line `i18n.init_bot(bot, get_locale)`, we can shorten things.
+
+This function adds a pre-invoke hook that sets the language based on the result of `get_locale`. The `contextually_get_text` function is also exposed as `py18n.extension._`, and it is a `classmethod`.
+
+We can change it by adding the following import and change our function:
+```python
+from py18n.extension import I18nExtension, _
+
+# ...
+
+@bot.command(pass_context=True)
+async def hello(ctx):
+    await ctx.send(_("hello"))
+```
+
+There, much tidier!
+- The `_` function considers the current context and uses the correct locale by default.
+- When initializing any `I18nExtension`, as we did earlier, it becomes the default i18n instance. The default instance is used by `_` and `contextually_get_text`.
+
+## Issues
+If you encounter any problems, check out [current issues](https://github.com/starsflower/py18n/issues) or [make a new issue](https://github.com/starsflower/py18n/issues/new).
 
 ## Notes
-- It is not fully open sourced (as of writing), because the code requires clean up and a bit of refactoring.
 - Feel free to contribute! This is released under the GLP-3 license. (If you suggest another license, make an issue suggesting).
