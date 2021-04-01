@@ -24,9 +24,9 @@ class SafeDict(dict):
 
 
 class Language:
-    def __init__(self, name: str, id: str, translations: Dict[str, str]) -> None:
+    def __init__(self, name: str, code: str, translations: Dict[str, str]) -> None:
         self.name = name
-        self.id = id
+        self.code = code
         self._translations = translations
 
     def _get_translation_from_key(self, key: str, raise_on_empty: bool = True) -> str:
@@ -102,7 +102,7 @@ class Language:
 
     def and_(self, value: list, *args, **kwargs) -> str:
         """
-        Wraps :func:`join_list` but uses the translation key ``AND``
+        Wraps :func:`join_list` but uses the translation key ``and_``
 
         Parameters
         ----------
@@ -114,11 +114,11 @@ class Language:
         str
             The list as a "sensible" string
         """
-        return self.join_list(value, self._get_translation_from_key("AND",  *args, **kwargs))
+        return self.join_list(value, self._get_translation_from_key("and_",  *args, **kwargs))
 
     def or_(self, value: list, *args, **kwargs) -> str:
         """
-        Wraps :func:`join_list` but uses the translation key ``OR``
+        Wraps :func:`join_list` but uses the translation key ``or_``
 
         Parameters
         ----------
@@ -130,7 +130,7 @@ class Language:
         str
             The list as a "sensible" string
         """
-        return self.join_list(value, self._get_translation_from_key("OR",  *args, **kwargs))
+        return self.join_list(value, self._get_translation_from_key("or_",  *args, **kwargs))
 
     def get_text(
         self,
@@ -140,13 +140,48 @@ class Language:
         safedict=SafeDict,
         **kwargs
     ) -> str:
+        """
+        Get the formatted translation string
+
+        Parameters
+        ----------
+        key : str
+            The key to search for
+        list_formatter : bool, optional
+            Function to format lists, by default None
+
+            .. seealso :: functions :func:`and_`, :func:`or_`, :func:`join_list`
+        use_translations : bool, optional
+            Whether to use translations in formatting, by default True
+
+            For example, any missing parameters for the string (wrapped
+            in curly braces) can be replaced by translations in the current
+            language. This could be used to mix translation entries.
+
+                >>> language = Language("English", "en", {
+                    "you_lost": "You lost the {game}",
+                    "game": "game",
+                })
+
+                >>> language.get_text("you_lost")
+                "You lost the game"
+        safedict : Any, optional
+            Class to use as a "Safe dict", by default :cls:`SafeDict`
+        **kwargs : dict, optional
+            Parameters to pass to translation
+
+        Returns
+        -------
+        str
+            The translated string
+        """
         base_string = self._get_translation_from_key(key)
 
         # Sanitize passed arguments
         params = kwargs.copy()
         for key, value in params.items():
             if list_formatter and isinstance(value, list):
-                key[value] = list_formatter(value)
+                params[key] = list_formatter(value)
 
         # Create the dict using given kwargs
         mapping = kwargs
