@@ -15,3 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with py18n.  If not, see <http://www.gnu.org/licenses/>.
 
+from .i18n import I18n
+from .language import Language
+from .extension import I18nExtension
