@@ -32,6 +32,25 @@ class I18nExtension(I18n):
     default_i18n_instance = None
 
     def __init__(self, languages: List[Language], fallback: Union[str, int], bot: Optional[commands.Bot] = None, default: bool = True) -> None:
+        """
+        Initialize the extension class
+
+        Parameters
+        ----------
+        languages : List[Language]
+            List of lanugages to use
+        fallback : Union[str, int]
+            String ID or list index of the fallback locale
+        bot : Optional[commands.Bot], optional
+            The bot to attach to, by default None
+        default : bool, optional
+            Whether to make this i18n instance the default, by default True
+
+            If there is no default i18n instance, this parameter is ignored and
+            it is always set.
+            
+            The default is used by :func:`I18nExtension.contextual_get_text`.
+        """
         super().__init__(languages, fallback)
         self._current_locale = contextvars.ContextVar("_current_locale")
         self._bot = None
@@ -102,6 +121,32 @@ class I18nExtension(I18n):
         should_fallback: bool = True,
         **kwargs
     ) -> str:
+        """
+        Wraps :func:`get_text` to use the current context's locale
+        
+        .. seealso: documentation for :func:`Language.get_text`
+
+        Parameters
+        ----------
+        key : str
+            The key to search for
+        list_formatter : bool, optional
+            Function to format lists, by default None
+        use_translations : bool, optional
+            Whether to use translations in formatting, by default True
+        should_fallback : bool, optional
+            Should fallback to default locale, by default True
+
+        Returns
+        -------
+        str
+            Translated and formatted string
+
+        Raises
+        ------
+        NameError
+            If there is no current i18n instance set
+        """
         i18n = cls.default_i18n_instance
         if i18n is None:
             raise NameError("No default i18n instance has been initialized!")

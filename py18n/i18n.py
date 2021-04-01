@@ -51,6 +51,33 @@ class I18n:
         should_fallback: bool = True,
         **kwargs
     ) -> str:
+        """
+        Wraps :func:`Language.get_text` to get translation based on the given locale
+        
+        .. seealso: documentation for :func:`Language.get_text`
+
+        Parameters
+        ----------
+        key : str
+            The key to search for
+        list_formatter : bool, optional
+            Function to format lists, by default None
+        use_translations : bool, optional
+            Whether to use translations in formatting, by default True
+        should_fallback : bool, optional
+            Should fallback to default locale, by default True
+
+        Returns
+        -------
+        str
+            Translated and formatted string
+
+        Raises
+        ------
+        KeyError
+            If the key could not be found in the locale, nro in the fallback
+            if `should_fallback` is `True`
+        """
         # Get locale
         if locale not in self._languages:
             raise KeyError(f"Given locale `{locale}` does not exist!")
