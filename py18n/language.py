@@ -18,13 +18,17 @@
 from typing import Dict
 
 
-class Locale:
+class SafeDict(dict):
+    def __missing__(self, key):
+        return "{" + key + "}"
+
+
+class Language:
     def __init__(self, name: str, id: str, translations: Dict[str, str]) -> None:
         self.name = name
         self.id = id
         self._translations = translations
 
-    @classmethod
     def _get_translation_from_key(self, key: str, raise_on_empty: bool = True) -> str:
         """
         Get the translation string from a given key. The default behaviour 
@@ -60,7 +64,7 @@ class Locale:
                     raise KeyError(f"{part} was not found under {current}")
         else:
             current = self._translations[key]
-        
+
         if raise_on_empty and current == "":
             raise KeyError("Resultant string was empty")
 
@@ -95,7 +99,7 @@ class Locale:
         else:
             # All but last connected by ",", and last connected by connector
             return connector.join([','.join(value[:-1]), value[-1]])
-    
+
     def and_(self, value: list, *args, **kwargs) -> str:
         """
         Wraps :func:`join_list` but uses the translation key ``AND``
@@ -111,7 +115,7 @@ class Locale:
             The list as a "sensible" string
         """
         return self.join_list(value, self._get_translation_from_key("AND",  *args, **kwargs))
-    
+
     def or_(self, value: list, *args, **kwargs) -> str:
         """
         Wraps :func:`join_list` but uses the translation key ``OR``
@@ -128,3 +132,29 @@ class Locale:
         """
         return self.join_list(value, self._get_translation_from_key("OR",  *args, **kwargs))
 
+    def get_text(
+        self,
+        key: str,
+        list_formatter: bool = None,
+        use_translations: bool = True,
+        safedict=SafeDict,
+        **kwargs
+    ) -> str:
+        base_string = self._get_translation_from_key(key)
+
+        # Sanitize passed arguments
+        params = kwargs.copy()
+        for key, value in params.items():
+            if list_formatter and isinstance(value, list):
+                key[value] = list_formatter(value)
+
+        # Create the dict using given kwargs
+        mapping = kwargs
+        if use_translations:
+            # Put `**kwargs` after to prioritize given translations
+            mapping = {
+                **self._translations,
+                **mapping
+            }
+        
+        return base_string.format_map(safedict(**mapping))
