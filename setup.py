@@ -24,5 +24,6 @@ setup(name='Py18n',
       author='starsflower',
       url='https://github.com/starsflower/py18n',
       packages=['py18n'],
-      package_dir={'py18n': './py18n'}
+      package_dir={'py18n': './py18n'},
+      install_requires=['discord.py']
      )
