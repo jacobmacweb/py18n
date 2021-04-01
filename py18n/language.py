@@ -114,7 +114,7 @@ class Language:
         str
             The list as a "sensible" string
         """
-        return self.join_list(value, self._get_translation_from_key("and_",  *args, **kwargs))
+        return self.join_list(value, " " + self._get_translation_from_key("and_",  *args, **kwargs) + " ")
 
     def or_(self, value: list, *args, **kwargs) -> str:
         """
@@ -130,7 +130,7 @@ class Language:
         str
             The list as a "sensible" string
         """
-        return self.join_list(value, self._get_translation_from_key("or_",  *args, **kwargs))
+        return self.join_list(value, " " + self._get_translation_from_key("or_",  *args, **kwargs) + " ")
 
     def get_text(
         self,
@@ -184,7 +184,7 @@ class Language:
                 params[key] = list_formatter(value)
 
         # Create the dict using given kwargs
-        mapping = kwargs
+        mapping = params
         if use_translations:
             # Put `**kwargs` after to prioritize given translations
             mapping = {

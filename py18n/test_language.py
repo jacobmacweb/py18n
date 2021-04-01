@@ -6,7 +6,8 @@ class LanguageTesting(unittest.TestCase):
         self.language = Language("English", "en", {
             "you_lost": "You lost the {game}",
             "game": "game",
-            "hello": "Hello, {place}!"
+            "hello": "Hello, {place}!",
+            "and_": "and"
         })
     
     def test_basic_get(self):
@@ -17,6 +18,10 @@ class LanguageTesting(unittest.TestCase):
     
     def test_templated_priority(self):
         self.assertEqual(self.language.get_text("you_lost", game="lottery"), "You lost the lottery")
+    
+    def test_formatted_list(self):
+        self.assertEqual(self.language.get_text("hello", list_formatter=self.language.and_, place=["World", "Universe"]), "Hello, World and Universe!")
+
 
 
 if __name__ == '__main__':
