@@ -128,7 +128,7 @@ i18n.init_bot(bot, get_locale)
 
 @bot.command(pass_context=True)
 async def hello(ctx):
-    await ctx.send(i18n.contextually_get_text("hello"))
+    await ctx.send(i18n.contextual_get_text("hello"))
 ```
 
 This is all good, but because of our line `i18n.init_bot(bot, get_locale)`, we can shorten things.
