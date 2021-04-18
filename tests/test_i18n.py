@@ -1,11 +1,7 @@
 import unittest
 
-try:
-    from .i18n import I18n
-    from .language import Language
-except ImportError:
-    from i18n import I18n
-    from language import Language
+from py18n.i18n import I18n, InvalidLocaleError, InvalidTranslationKeyError
+from py18n.language import Language
 
 
 class I18nTesting(unittest.TestCase):
@@ -30,9 +26,12 @@ class I18nTesting(unittest.TestCase):
     
     def test_fallback(self):
         self.assertEqual(self.i18n.get_text("english", "fr"), "English")
-        with self.assertRaises(KeyError):
+        with self.assertRaises(InvalidTranslationKeyError):
             self.i18n.get_text("english", "fr", should_fallback=False)
     
+    def test_locale_error(self):
+        with self.assertRaises(InvalidLocaleError):
+            self.i18n.get_text("foo", "bar", should_fallback=False)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -1,5 +1,5 @@
 import unittest
-from language import Language
+from py18n.language import Language
 
 class LanguageTesting(unittest.TestCase):
     def setUp(self) -> None:

@@ -76,17 +76,8 @@ i18n = I18n([
 >>> # However we can make it not fallback, but this will throw an error if the translation isn't found
 >>> i18n.get_text("english", "fr", should_fallback=False) 
 Traceback (most recent call last):
-  File "C:\Users\Avery\AppData\Local\Programs\Python\Python39\lib\site-packages\py18n-1.0-py3.9.egg\py18n\i18n.py", line 87, in get_text
-  File "C:\Users\Avery\AppData\Local\Programs\Python\Python39\lib\site-packages\py18n-1.0-py3.9.egg\py18n\language.py", line 178, in get_text
-  File "C:\Users\Avery\AppData\Local\Programs\Python\Python39\lib\site-packages\py18n-1.0-py3.9.egg\py18n\language.py", line 66, in _get_translation_from_key
-KeyError: 'english'
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "C:\Users\Avery\AppData\Local\Programs\Python\Python39\lib\site-packages\py18n-1.0-py3.9.egg\py18n\i18n.py", line 91, in get_text
-KeyError: 'Translation english not found for fr!'
+  ...      
+py18n.i18n.InvalidTranslationKeyError: 'Translation foo not found for en!'
 ```
 
 ### Discord

@@ -21,12 +21,9 @@ from typing import Callable, List, Optional, Union
 
 from discord.ext import commands
 
-try:
-    from .i18n import I18n
-    from .language import Language
-except ImportError:
-    from i18n import I18n
-    from language import Language
+from .i18n import I18n
+from .language import Language
+
 
 class I18nExtension(I18n):
     default_i18n_instance = None
@@ -48,7 +45,7 @@ class I18nExtension(I18n):
 
             If there is no default i18n instance, this parameter is ignored and
             it is always set.
-            
+
             The default is used by :func:`I18nExtension.contextual_get_text`.
         """
         super().__init__(languages, fallback)
@@ -123,7 +120,7 @@ class I18nExtension(I18n):
     ) -> str:
         """
         Wraps :func:`get_text` to use the current context's locale
-        
+
         .. seealso: documentation for :func:`Language.get_text`
 
         Parameters
@@ -155,5 +152,6 @@ class I18nExtension(I18n):
             key, i18n.get_current_locale(), list_formatter=list_formatter,
             use_translations=use_translations, should_fallback=should_fallback,
             **kwargs)
+
 
 _ = I18nExtension.contextual_get_text

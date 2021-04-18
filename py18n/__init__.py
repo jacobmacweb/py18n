@@ -18,3 +18,5 @@
 from .i18n import I18n
 from .language import Language
 from .extension import I18nExtension
+
+__version__ = "v1.1"

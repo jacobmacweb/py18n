@@ -17,12 +17,8 @@
 
 import unittest
 
-try:
-    from .extension import I18nExtension, _
-    from .language import Language
-except ImportError:
-    from extension import I18nExtension, _
-    from language import Language
+from py18n.extension import I18nExtension, _
+from py18n.language import Language
 
 
 class I18nTesting(unittest.TestCase):

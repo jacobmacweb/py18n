@@ -174,6 +174,11 @@ class Language:
         -------
         str
             The translated string
+
+        Raises
+        ------
+        KeyError
+            The translation was not found (raised through `_get_translation_from_key`)
         """
         base_string = self._get_translation_from_key(key)
 
@@ -191,5 +196,5 @@ class Language:
                 **self._translations,
                 **mapping
             }
-        
+
         return base_string.format_map(safedict(**mapping))
