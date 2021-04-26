@@ -20,6 +20,9 @@
 # Py18n
 This is a open sourced version of the internal internationalization engine used for [Kolumbao](https://kolumbao.com/).
 
+[![](https://img.shields.io/pypi/v/py18n.svg)](https://pypi.org/project/Py18n/)
+[![](https://img.shields.io/pypi/implementation/py18n.svg)](https://pypi.org/project/Py18n/)
+
 
 ## Installation
 To install the package to your Python installation, clone the repository locally then run the following command in the repository's directory
