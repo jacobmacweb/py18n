@@ -17,12 +17,14 @@
 
 import unittest
 
+from discord.ext import commands
+
 from py18n.extension import I18nExtension, _
 from py18n.language import Language
 
 
-class I18nTesting(unittest.TestCase):
-    def setUp(self) -> None:
+class I18nExtensionTesting(unittest.TestCase):    
+    def test_basic_get_contextual(self):
         self.i18n = I18nExtension([
             Language("English", "en", {
                 "hello": "Hello",
@@ -35,8 +37,7 @@ class I18nTesting(unittest.TestCase):
                 "francais": "Français"
             }),
         ], fallback="en")
-    
-    def test_basic_get_contextual(self):
+
         self.i18n.set_current_locale("en")
         self.assertEqual(_("hello"), "Hello")
         self.i18n.set_current_locale("fr")
@@ -47,6 +48,25 @@ class I18nTesting(unittest.TestCase):
         I18nExtension.default_i18n_instance = None
         with self.assertRaises(NameError):
             _("hello")
+    
+    def test_bot(self):
+        def get_locale(_):
+            return "en"
+
+        self.i18n = I18nExtension([
+            Language("English", "en", {
+                "hello": "Hello",
+                "goodbye": "Goodbye",
+                "english": "English"
+            }),
+            Language("French", "fr", {
+                "hello": "Bonjour",
+                "goodbye": "Au revoir",
+                "francais": "Français"
+            }),
+        ], bot=commands.Bot("!"), get_locale_func=get_locale, fallback="en")
+
+        self.assertEqual(self.i18n.contextual_get_text("hello"), "Hello")
     
 
 if __name__ == '__main__':

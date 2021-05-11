@@ -23,7 +23,7 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.md'), encoding
     long_description = f.read()
 
 setup(name='Py18n',
-      version='1.1',
+      version='1.1.1',
       description='I18n for Discord.py',
       author='starsflower',
       url='https://github.com/starsflower/py18n',

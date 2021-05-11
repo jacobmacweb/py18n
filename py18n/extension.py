@@ -28,9 +28,22 @@ from .language import Language
 class I18nExtension(I18n):
     default_i18n_instance = None
 
-    def __init__(self, languages: List[Language], fallback: Union[str, int], bot: Optional[commands.Bot] = None, default: bool = True) -> None:
+    def __init__(
+        self,
+        languages: List[Language],
+        fallback: Union[str, int],
+        bot: Optional[commands.Bot] = None,
+        get_locale_func: Callable = None,
+        default: bool = True
+    ) -> None:
         """
-        Initialize the extension class
+        Initialize the extension class.
+
+        .. warning::
+
+            The bot will only be attached to if both `bot` and `get_locale_func`
+            are provided to this function. Otherwise it will not attach
+            automatically.
 
         Parameters
         ----------
@@ -38,8 +51,10 @@ class I18nExtension(I18n):
             List of lanugages to use
         fallback : Union[str, int]
             String ID or list index of the fallback locale
-        bot : Optional[commands.Bot], optional
+        bot : commands.Bot, optional
             The bot to attach to, by default None
+        get_locale_func : Callable, optional
+            If provided, init_bot will be run for you
         default : bool, optional
             Whether to make this i18n instance the default, by default True
 
@@ -54,6 +69,9 @@ class I18nExtension(I18n):
 
         if default or I18nExtension.default_i18n_instance is None:
             I18nExtension.default_i18n_instance = self
+        
+        if self._bot and get_locale_func:
+            self.init_bot(self._bot, get_locale_func)
 
     def init_bot(self, bot: commands.Bot, get_locale_func: Callable = None):
         """
@@ -67,7 +85,7 @@ class I18nExtension(I18n):
 
             I recommend creating an override to have multiple pre- and post-
             invoke hooks if required, or setting the current locale yourself
-            with :func`set_current_locale`.
+            with :func:`set_current_locale`.
 
         Parameters
         ----------
@@ -80,10 +98,11 @@ class I18nExtension(I18n):
         """
         self._bot = bot
         if get_locale_func is None:
+            # Just use the fallback
             get_locale_func = lambda *_: self._fallback
 
         async def pre(ctx):
-            ctx.set_current_locale(get_locale_func(ctx))
+            self.set_current_locale(get_locale_func(ctx))
 
         self._bot.before_invoke(pre)
 
